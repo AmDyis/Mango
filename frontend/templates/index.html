@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime and Manga Search</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <button id="left-button" class="circle-button blue"></button>
+        <div class="gif-container">
+            <img id="gif" class="gif" src="/static/othergif/gojo.gif" alt="Gif" />
+        </div>
+        <button id="right-button" class="circle-button red"></button>
+    </div>
+    <header>
+        <div id="header-left" class="header-left">
+            <button id="randomAnimeButton">Random Anime</button>
+            <button id="charactersButton">Characters</button>
+            <button id="genresButton">Genres</button>
+            <button id="personButton">Person</button>
+            <button id="producersButton">Producers</button>
+            <button id="seasonsButton">Seasons</button>
+            <button id="topButton">Top</button>
+        </div>
+        <h1>Anime and Manga Search</h1>
+        <form id="searchForm">
+            <input type="text" id="searchQuery" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+    </header>
+    <main id="results">
+        <!-- Результаты поиска будут отображаться здесь -->
+    </main>
+    <script src="/static/js/scripts.js"></script>
+</body>
+</html>
