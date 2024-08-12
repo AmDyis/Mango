@@ -2,6 +2,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from typing import AsyncGenerator
 import os
 from dotenv import load_dotenv
 
@@ -25,6 +26,6 @@ async_session = sessionmaker(
 )
 
 # Функция для получения сессии базы данных
-async def get_db():
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         yield session

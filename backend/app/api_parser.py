@@ -2,6 +2,7 @@
 import aiohttp
 import asyncio
 
+
 JIKAN_API_BASE_URL = "https://api.jikan.moe/v4"
 
 async def fetch_data(endpoint, params=None):

@@ -4,59 +4,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeEventListeners() {
     document.getElementById('searchForm').addEventListener('submit', handleSearchSubmit);
+    document.getElementById('randomAnimeButton').addEventListener('click', fetchRandomAnime);
+    document.getElementById('charactersButton').addEventListener('click', fetchCharacters);
+    document.getElementById('genresButton').addEventListener('click', fetchGenres);
+    document.getElementById('personButton').addEventListener('click', fetchPersons);
+    document.getElementById('producersButton').addEventListener('click', fetchProducers);
+    document.getElementById('seasonsButton').addEventListener('click', fetchSeasons);
+    document.getElementById('topButton').addEventListener('click', fetchTopAnime);
 }
 
-function handleSearchSubmit(event) {
+async function handleSearchSubmit(event) {
     event.preventDefault();
     const query = document.getElementById('searchQuery').value;
-    window.location.href = `/search?query=${encodeURIComponent(query)}`;
+    await fetchAnimeData(query);
 }
 
+async function fetchAnimeData(query) {
+    try {
+        const response = await fetch(`/anime/${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (data) {
+            const characters = await fetchAnimeCharacters(data.mal_id);
+            displayAnimeData(data, characters);
+        } else {
+            document.getElementById('results').innerHTML = '<p>Anime not found.</p>';
+        }
+    } catch (error) {
+        console.error('Error fetching anime data:', error);
+        document.getElementById('results').innerHTML = '<p>Error fetching data.</p>';
+    }
+}
 
 async function fetchAnimeCharacters(animeId) {
     try {
-        const charactersResponse = await fetch(`/anime/${animeId}/characters`);
-        const charactersResults = await charactersResponse.json();
-        return charactersResults.data || [];
+        const response = await fetch(`/anime/${animeId}/characters`);
+        const data = await response.json();
+        return data.characters || [];
     } catch (error) {
         console.error('Error fetching characters:', error);
         return [];
     }
 }
 
-async function fetchData(endpoint) {
-    try {
-        const response = await fetch(endpoint);
-        const results = await response.json();
-
-        if (!results || !results.data) {
-            document.getElementById('results').innerHTML = '<p>No data found.</p>';
-            return;
-        }
-
-        const data = results.data;
-        const dataId = data.mal_id;
-
-        const characters = await fetchAnimeCharacters(dataId);
-        displayAnimeData(data, characters);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        document.getElementById('results').innerHTML = '<p>Error fetching data.</p>';
-    }
-}
-
 function displayAnimeData(anime, characters) {
     const charactersHTML = characters.map(character => `
-        <li>${character.character.name}</li>
+        <li>${character.name}</li>
     `).join('');
 
     const resultHTML = `    
         <div class="anime-card">
-            <img src="${anime.images.webp.large_image_url}" 
-            alt="${anime.title}">
+            <img src="${anime.images.webp.large_image_url}" alt="${anime.title}">
             <div class="anime-details">
-                <h2 class="anime-title">${anime.title}</h2>
-                <p class="anime-synopsis">${anime.synopsis}</p>
+                <h2>${anime.title}</h2>
+                <p>${anime.synopsis}</p>
                 <div class="anime-info">
                     <div><strong>Score:</strong> ${anime.score}</div>
                     <div><strong>Episodes:</strong> ${anime.episodes}</div>
@@ -65,15 +66,83 @@ function displayAnimeData(anime, characters) {
                 <a href="${anime.url}" target="_blank">More Info</a>
                 <div class="anime-characters">
                     <h3>Characters</h3>
-                    <ul>
-                        ${charactersHTML}
-                    </ul>
+                    <ul>${charactersHTML}</ul>
                 </div>
             </div>
         </div>
     `;
     document.getElementById('results').innerHTML = resultHTML;
 }
+
+async function fetchRandomAnime() {
+    try {
+        const response = await fetch('/anime/random');
+        const data = await response.json();
+        if (data) {
+            await fetchAnimeData(data.mal_id); // Ищем случайное аниме
+        } else {
+            document.getElementById('results').innerHTML = '<p>Random anime not found.</p>';
+        }
+    } catch (error) {
+        console.error('Error fetching random anime:', error);
+        document.getElementById('results').innerHTML = '<p>Error fetching random anime.</p>';
+    }
+}
+
+async function fetchGenres() {
+    try {
+        const response = await fetch('/genres/anime');
+        const data = await response.json();
+        displayGenres(data.genres);
+    } catch (error) {
+        console.error('Error fetching genres:', error);
+        document.getElementById('results').innerHTML = '<p>Error fetching genres.</p>';
+    }
+}
+
+function displayGenres(genres) {
+    const genresHTML = genres.map(genre => `<li>${genre.name}</li>`).join('');
+    document.getElementById('results').innerHTML = `<ul>${genresHTML}</ul>`;
+}
+
+async function fetchCharacters() {
+    // Подобным образом реализуйте функцию для получения персонажей
+}
+
+async function fetchPersons() {
+    // Подобным образом реализуйте функцию для получения персон
+}
+
+async function fetchProducers() {
+    // Подобным образом реализуйте функцию для получения продюсеров
+}
+
+async function fetchSeasons() {
+    // Подобным образом реализуйте функцию для получения сезонов
+}
+
+async function fetchTopAnime() {
+    try {
+        const response = await fetch('/top/anime');
+        const data = await response.json();
+        displayTopAnime(data.top);
+    } catch (error) {
+        console.error('Error fetching top anime:', error);
+        document.getElementById('results').innerHTML = '<p>Error fetching top anime.</p>';
+    }
+}
+
+function displayTopAnime(topAnime) {
+    const topAnimeHTML = topAnime.map(anime => `
+        <div class="anime-card">
+            <img src="${anime.images.webp.large_image_url}" alt="${anime.title}">
+            <h2>${anime.title}</h2>
+            <p>${anime.synopsis}</p>
+        </div>
+    `).join('');
+    document.getElementById('results').innerHTML = topAnimeHTML;
+}
+
 let leftButtonPressed = false;
 let rightButtonPressed = false;
 let gifPlayed = false;

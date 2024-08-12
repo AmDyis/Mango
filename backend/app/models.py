@@ -7,14 +7,16 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
+    
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    is_admin = Column(Boolean, default=False)  # Новая колонка для разделения админов и пользователей
     is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
-    ratings = relationship("Rating", back_populates="user")
-    comments = relationship("Comment", back_populates="user")
+    comments = relationship("Comment", back_populates="user")  # Исправлено
+    ratings = relationship("Rating", back_populates="user")  # Исправлено
+
 
 class Rating(Base):
     __tablename__ = "ratings"
@@ -23,7 +25,7 @@ class Rating(Base):
     entity_id = Column(Integer, nullable=False)  # ID аниме или манги
     entity_type = Column(String, nullable=False)  # "anime" или "manga"
     rating = Column(Float, nullable=False)
-    user = relationship("User", back_populates="ratings")
+    user = relationship("User", back_populates="ratings")  # Исправлено
 
 class Comment(Base):
     __tablename__ = "comments"
@@ -35,4 +37,4 @@ class Comment(Base):
     entity_type = Column(String, nullable=False)  # "anime", "manga", "episode", "chapter"
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    user = relationship("User", back_populates="comments")
+    user = relationship("User", back_populates="comments")  # Исправлено

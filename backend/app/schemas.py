@@ -2,12 +2,24 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
 
+class Token(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str
+    is_admin: bool
+
+class TokenRefreshRequest(BaseModel):
+    refresh_token: str
+
 # User schema
 class UserBase(BaseModel):
     username: str
     email: EmailStr
     is_active: Optional[bool] = True
-    is_superuser: Optional[bool] = False
+    is_admin: Optional[bool] = False
 
 class UserCreate(UserBase):
     password: str
